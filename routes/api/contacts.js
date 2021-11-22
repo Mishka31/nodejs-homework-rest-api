@@ -1,8 +1,14 @@
-/* eslint-disable new-cap */
-const { NotFound } = require('http-errors')
+const { NotFound, BadRequest } = require('http-errors')
 const express = require('express')
-const { listContacts, getContactById } = require('../../model/index')
+const Joi = require('joi')
+const { listContacts, getContactById, addContact } = require('../../model/index')
 const router = express.Router()
+
+const schema = Joi.object({
+  name: Joi.string().min(3).max(30).required(),
+  email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+  phone: Joi.number().min(10).max(10).required()
+})
 
 router.get('/', async (_, res, next) => {
   try {
@@ -27,7 +33,16 @@ router.get('/:contactId', async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
+  try {
+    const { error } = schema.validate(req.body)
+    if (error) {
+      throw new BadRequest('missing required name field')
+    }
+    const result = await addContact(req.body)
+    res.status(201).json({ status: 'succes', code: 201, data: { result } })
+  } catch (error) {
+    next(error)
+  }
 })
 
 router.delete('/:contactId', async (req, res, next) => {
