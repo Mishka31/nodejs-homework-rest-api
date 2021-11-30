@@ -1,23 +1,33 @@
 const express = require('express')
 const { ctrl } = require('../../controllers')
-const { validation, asyncTryCatch } = require('../../middleware')
+const { validation, authenticate, asyncTryCatch } = require('../../middleware')
 const { schema, schemaFavorite } = require('../../model/contact')
 const router = express.Router()
 
-router.get('/', asyncTryCatch(ctrl.getAll))
+router.get('/', authenticate, asyncTryCatch(ctrl.getAll))
 
-router.get('/:contactId', asyncTryCatch(ctrl.getById))
+router.get('/:contactId', authenticate, asyncTryCatch(ctrl.getById))
 
-router.post('/', validation(schema), asyncTryCatch(ctrl.addContacts))
+router.post(
+  '/',
+  authenticate,
+  validation(schema),
+  asyncTryCatch(ctrl.addContacts)
+)
 
-router.put('/:contactId', validation(schema), asyncTryCatch(ctrl.updateById))
+router.put(
+  '/:contactId',
+  authenticate,
+  validation(schema),
+  asyncTryCatch(ctrl.updateById)
+)
 
 router.patch(
   '/:contactId/favorite',
+  authenticate,
   validation(schemaFavorite),
   asyncTryCatch(ctrl.updateFavorite)
 )
-
-router.delete('/:contactId', asyncTryCatch(ctrl.deleteById))
+router.delete('/:contactId', authenticate, asyncTryCatch(ctrl.deleteById))
 
 module.exports = router
