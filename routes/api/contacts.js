@@ -28,6 +28,7 @@ router.patch(
   validation(schemaFavorite),
   asyncTryCatch(ctrl.updateFavorite)
 )
+
 router.delete('/:contactId', authenticate, asyncTryCatch(ctrl.deleteById))
 
 module.exports = router
