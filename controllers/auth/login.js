@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 const login = async (req, res) => {
   const { email, password } = req.body
   const user = await User.findOne({ email })
-  if (!user || !user.comparePassword(password)) {
+  if (!user || !user.verify || !user.comparePassword(password)) {
     throw new BadRequest('Wrong email or Password')
   }
 

@@ -18,5 +18,5 @@ router.patch(
   uploadAvatars.single('image'),
   asyncTryCatch(ctrl.updateImg)
 )
-
+router.get('verify/:verificationToken', asyncTryCatch(ctrl.verify))
 module.exports = router
